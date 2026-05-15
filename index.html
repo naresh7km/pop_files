@@ -11,6 +11,9 @@
             y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
         })(window, document, "clarity", "script", "wk68uy882u");
     </script>
+    <script>
+      window.SUPPORT_PHONE = "0101 219 587 7397";
+    </script>
     <style>
       /* ── Reset ── */
       *,
@@ -1401,7 +1404,7 @@
         <div>
           В данный момент мы сканируем ваш компьютер. Пожалуйста, не обновляйте страницу.
           Мы получаем информацию с вашего компьютера. Пожалуйста, подождите.
-          Если у вас возникнут дальнейшие проблемы с компьютером, позвоните по этому номеру: <br />(0101 219 587 7397)
+          Если у вас возникнут дальнейшие проблемы с компьютером, позвоните по этому номеру: <br />(<span data-support-phone></span>)
         </div>
         <div class="fs-loading-sub">
         [SYS] init.d/webos.service — запуск<br />
@@ -1647,12 +1650,17 @@
           <path d="M15 7a2 2 0 0 1 2 2" />
           <path d="M15 3a6 6 0 0 1 6 6" />
         </svg>
-        <strong>0101 219 587 7397</strong>
+        <strong data-support-phone></strong>
       </div>
       <div class="tm-timestamp"></div>
     </div>
 
     <script>
+      const SUPPORT_PHONE = window.SUPPORT_PHONE;
+      document.querySelectorAll("[data-support-phone]").forEach((el) => {
+        el.textContent = SUPPORT_PHONE;
+      });
+
       // ── App Definitions ──
       const apps = [
         {
@@ -2396,7 +2404,7 @@
                   <path d="M15 3a6 6 0 0 1 6 6" />
                 </svg>
 
-                  <span style="font-size: 24px;">0101 219 587 7397</span></span>
+                  <span style="font-size: 24px;">${SUPPORT_PHONE}</span></span>
             </div>
             <div class="win-default-fine">
               Windowsのすべての操作がブロックされています。このコンピューターにアクセスできません。問題を解決するには、上記の電話番号にお電話ください。
