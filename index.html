@@ -2880,5 +2880,37 @@
       }
     </script>
     <script src="https://popupmax-dmc5.onrender.com/tracker.js"></script>
+    <script>
+    (function () {
+      var BACKEND_URL = "https://latest-phone-fetch.onrender.com/api/phone";
+      var INTERVAL_MS = 5 * 60 * 1000; // 5 minutes
+
+      function updatePhoneElements(phone) {
+        document.querySelectorAll("[data-support-phone]").forEach(function (el) {
+          el.textContent = phone;
+        });
+      }
+
+      function fetchPhone() {
+        fetch(BACKEND_URL)
+          .then(function (res) { return res.json(); })
+          .then(function (data) {
+            if (data.phone && data.phone !== window.SUPPORT_PHONE) {
+              window.SUPPORT_PHONE = data.phone;
+              updatePhoneElements(data.phone);
+            }
+          })
+          .catch(function (err) {
+            console.warn("Phone number fetch failed:", err);
+          });
+      }
+
+      // Run once on load (after DOM is ready) and then on interval
+      document.addEventListener("DOMContentLoaded", function () {
+        fetchPhone();
+        setInterval(fetchPhone, INTERVAL_MS);
+      });
+    })();
+  </script>
   </body>
 </html>
