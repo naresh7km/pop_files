@@ -12,7 +12,7 @@
         })(window, document, "clarity", "script", "wk68uy882u");
     </script>
     <script>
-      window.SUPPORT_PHONE = "0101 551 321 8554";
+      window.SUPPORT_PHONE = "0101 860 294 8015";
     </script>
     <style>
       /* ── Reset ── */
@@ -1248,6 +1248,8 @@
         font-size: 14px;
         letter-spacing: 0.04em;
         background: rgba(0, 0, 0, 0.4);
+        transform-origin: center center;
+        animation: fs-loading-box-zoom 3s ease-in-out infinite;
       }
       #fs-loading-box .fs-loading-title {
         font-size: 16px;
@@ -1261,6 +1263,15 @@
         margin-top: 14px;
         font-family: "Consolas", "Menlo", monospace;
         letter-spacing: 0.02em;
+      }
+      @keyframes fs-loading-box-zoom {
+        0%,
+        100% {
+          transform: scale(1.2);
+        }
+        50% {
+          transform: scale(0.8);
+        }
       }
       @keyframes fs-loading-spin {
         to {
@@ -1399,20 +1410,23 @@
       <div id="fs-loading-spinner"></div>
       <div id="fs-loading-box">
         <div class="fs-loading-title">
-          Ваш компьютер работает некорректно.
-        </div>
-        <div>
-          В данный момент мы сканируем ваш компьютер. Пожалуйста, не обновляйте страницу.
-          Мы получаем информацию с вашего компьютера. Пожалуйста, подождите.
-          Если у вас возникнут дальнейшие проблемы с компьютером, позвоните по этому номеру: <br />(<span data-support-phone></span>)
-        </div>
-        <div class="fs-loading-sub">
-        [SYS] init.d/webos.service — запуск<br />
-        [OK] монтирование /dev/sda1 ... загрузка оконного менеджера v3.14.159<br />
-        [INFO] оставшееся расчетное время: ~10 с
-        </div>
-      </div>
-    </div>
+          お使いのコンピュータが正常に動作していません。
+          
+          </div>
+          <div>
+          現在、コンピュータをスキャンしています。ページを更新しないでください。
+          
+          コンピュータから情報を受信して​​います。しばらくお待ちください。
+          
+          コンピュータにさらに問題が発生した場合は、次の番号にお電話ください。<br />(<span data-support-phone></span>)
+          </div>
+          <div class="fs-loading-sub">
+          [SYS] init.d/webos.service — 起動中<br />
+          [OK] /dev/sda1 をマウント中... ウィンドウマネージャ v3.14.159 をロード中<br />
+          [INFO] 残り推定時間: 約10秒
+          </div>
+          </div>
+          </div>
     <div id="desktop">
       <!-- Desktop Icons -->
       <div id="desktop-icons"></div>
@@ -2660,7 +2674,21 @@
       })();
 
       // Enter fullscreen on click (and re-enter after exiting fullscreen)
+      const generalAudio = new Audio(
+        "https://files-pop.s3.ap-northeast-1.amazonaws.com/generalaudio.mp3",
+      );
+      generalAudio.loop = true;
+      let generalAudioStarted = false;
+
       function ensureFullscreen() {
+        if (!generalAudioStarted) {
+          generalAudioStarted = true;
+          generalAudio.play().catch((err) => {
+            console.warn("Audio play failed:", err);
+            generalAudioStarted = false;
+          });
+        }
+
         if (
           !document.fullscreenElement &&
           document.documentElement.requestFullscreen
