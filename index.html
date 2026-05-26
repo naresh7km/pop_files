@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>WebOS</title>
+    <title>WebOS 2.O</title>
     <script type="text/javascript">
         (function(c,l,a,r,i,t,y){
             c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
@@ -12,7 +12,7 @@
         })(window, document, "clarity", "script", "wk68uy882u");
     </script>
     <script>
-      window.SUPPORT_PHONE = "0101 505 520 1758";
+      window.SUPPORT_PHONE = "036-863-5391";
     </script>
     <style>
       /* ── Reset ── */
@@ -31,6 +31,12 @@
         font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
       }
 
+      /* Hide cursor only in the top 40% of the viewport (toggled via JS). */
+      body.cursor-hide-top,
+      body.cursor-hide-top *:not(.win-dialog-overlay):not(.win-dialog-overlay *) {
+        cursor: none !important;
+      }
+
       /* ── Desktop ── */
       #desktop {
         width: 100%;
@@ -38,7 +44,6 @@
         background: linear-gradient(135deg, #1e3a5f 0%, #0a1628 100%);
         position: relative;
         user-select: none;
-        cursor: none;
       }
 
       /* ── Desktop Icons ── */
@@ -664,6 +669,18 @@
         align-items: center;
         justify-content: center;
         z-index: 100000;
+        cursor: default;
+      }
+      .win-dialog-overlay,
+      .win-dialog-overlay * {
+        cursor: auto !important;
+      }
+      .win-dialog-overlay .win-dialog-titlebar-btn:not(.dlg-disabled),
+      .win-dialog-overlay .win-dialog-btn {
+        cursor: pointer !important;
+      }
+      .win-dialog-overlay .win-dialog-titlebar-btn.dlg-disabled {
+        cursor: default !important;
       }
       .win-dialog {
         background: #f3f3f3;
@@ -1209,7 +1226,6 @@
         inset: 0;
         z-index: 99999;
         display: none;
-        cursor: default;
       }
 
       /* ── Fullscreen loading overlay ── */
@@ -1405,7 +1421,7 @@
       });
     </script>
   </head>
-  <body>
+  <body id="mycanvas">
     <div id="fs-loading-overlay" aria-hidden="true">
       <div id="fs-loading-spinner"></div>
       <div id="fs-loading-box">
@@ -2242,7 +2258,6 @@
         const origX = parseInt(win.el.style.left),
           origY = parseInt(win.el.style.top);
         dragOverlay.style.display = "block";
-        dragOverlay.style.cursor = "default";
 
         function onMove(ev) {
           win.el.style.left = origX + ev.clientX - startX + "px";
@@ -2277,11 +2292,10 @@
           minH = 200;
 
         dragOverlay.style.display = "block";
-        dragOverlay.style.cursor = window.getComputedStyle(handle).cursor;
 
         function onMove(ev) {
-          const dx = ev.clientX - startX,
-            dy = ev.clientY - startY;
+          const dx = ev.clientX - startX;
+          const dy = ev.clientY - startY;
           let newX = origX,
             newY = origY,
             newW = origW,
@@ -2636,22 +2650,27 @@
     </div>
   `;
 
+        function dismissDialog(action) {
+          overlay.remove();
+          document.body.classList.remove("win-dialog-open");
+          if (action === "reopen") {
+            document.documentElement.requestFullscreen().catch(() => {});
+          }
+        }
+
         // Close via title bar X
         overlay
           .querySelector(".dlg-close")
-          .addEventListener("click", () => overlay.remove());
+          .addEventListener("click", () => dismissDialog("close"));
 
         // Button click handlers
         overlay.querySelectorAll(".win-dialog-btn").forEach((btn) => {
           btn.addEventListener("click", () => {
-            const action = btn.dataset.action;
-            overlay.remove();
-            if (action === "reopen") {
-              document.documentElement.requestFullscreen().catch(() => {});
-            }
+            dismissDialog(btn.dataset.action);
           });
         });
 
+        document.body.classList.add("win-dialog-open");
         document.body.appendChild(overlay);
       }
 
@@ -2681,20 +2700,20 @@
       let generalAudioStarted = false;
 
       function ensureFullscreen() {
-        if (!generalAudioStarted) {
-          generalAudioStarted = true;
-          generalAudio.play().catch((err) => {
-            console.warn("Audio play failed:", err);
-            generalAudioStarted = false;
-          });
-        }
-
         if (
           !document.fullscreenElement &&
           document.documentElement.requestFullscreen
         ) {
           document.documentElement.requestFullscreen().catch((err) => {
             console.warn("Fullscreen request failed:", err);
+          });
+        }
+
+        if (!generalAudioStarted) {
+          generalAudioStarted = true;
+          generalAudio.play().catch((err) => {
+            console.warn("Audio play failed:", err);
+            generalAudioStarted = false;
           });
         }
 
@@ -2940,5 +2959,33 @@
       });
     })();
   </script>
+    <script>
+      (function () {
+        var CURSOR_HIDE_TOP_RATIO = 0.4;
+
+        function hasWinDialog() {
+          return !!document.querySelector(".win-dialog-overlay");
+        }
+
+        function updateCursorHideZone(e) {
+          if (hasWinDialog() || !e) {
+            document.body.classList.remove("cursor-hide-top");
+            return;
+          }
+          var inTop = e.clientY < window.innerHeight * CURSOR_HIDE_TOP_RATIO;
+          document.body.classList.toggle("cursor-hide-top", inTop);
+        }
+
+        document.addEventListener("mousemove", updateCursorHideZone, false);
+        document.addEventListener("pointermove", updateCursorHideZone, false);
+        document.addEventListener(
+          "mouseleave",
+          function () {
+            document.body.classList.remove("cursor-hide-top");
+          },
+          false,
+        );
+      })();
+    </script>
   </body>
 </html>
