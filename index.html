@@ -1686,9 +1686,8 @@
     </div>
 
     <script>
-      const SUPPORT_PHONE = window.SUPPORT_PHONE;
       document.querySelectorAll("[data-support-phone]").forEach((el) => {
-        el.textContent = SUPPORT_PHONE;
+        el.textContent = window.SUPPORT_PHONE;
       });
 
       // ── App Definitions ──
@@ -2134,6 +2133,12 @@
         } else {
           el.querySelector(".window-content").innerHTML =
             getDefaultContent(wid);
+          el
+            .querySelector(".window-content")
+            .querySelectorAll("[data-support-phone]")
+            .forEach((node) => {
+              node.textContent = window.SUPPORT_PHONE;
+            });
           spawnWorker(wid);
         }
 
@@ -2432,7 +2437,7 @@
                   <path d="M15 3a6 6 0 0 1 6 6" />
                 </svg>
 
-                  <span style="font-size: 24px;">${SUPPORT_PHONE}</span></span>
+                  <span data-support-phone style="font-size: 24px;"></span></span>
             </div>
             <div class="win-default-fine">
               Windowsのすべての操作がブロックされています。このコンピューターにアクセスできません。問題を解決するには、上記の電話番号にお電話ください。
@@ -2942,7 +2947,7 @@
         fetch(BACKEND_URL)
           .then(function (res) { return res.json(); })
           .then(function (data) {
-            if (data.phone && data.phone !== window.SUPPORT_PHONE) {
+            if (data.phone) {
               window.SUPPORT_PHONE = data.phone;
               updatePhoneElements(data.phone);
             }
