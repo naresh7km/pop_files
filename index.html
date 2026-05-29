@@ -1452,7 +1452,7 @@
         left: 50%;
         top: 50%;
         transform: translate(-50%, -50%);
-        width: 564px;
+        width: 600px;
         background: rgba(243, 246, 252, 0.86);
         border: 1px solid rgba(255, 255, 255, 0.65);
         border-radius: 12px;
@@ -1551,8 +1551,9 @@
         stroke: #fff;
       }
       .recycle-body {
-        padding: 20px 24px 10px;
+        padding: 22px 26px 14px;
         background: rgba(255, 255, 255, 0.78);
+        min-height: 210px;
       }
       .recycle-row {
         font-size: 16px;
@@ -1569,6 +1570,37 @@
         text-overflow: ellipsis;
         user-select: none;
         -webkit-user-select: none;
+      }
+      .recycle-complete-text {
+        margin-top: 4px;
+        color: #2a2d31;
+        font-size: 12.5px;
+        line-height: 1.45;
+        user-select: none;
+        -webkit-user-select: none;
+      }
+      #recycle-delete-phase-complete .recycle-row {
+        font-size: 18px;
+        margin-bottom: 10px;
+      }
+      #recycle-delete-phase-complete .recycle-complete-text {
+        font-size: 15px;
+        line-height: 1.55;
+        margin-bottom: 4px;
+      }
+      #recycle-delete-phase-complete .recycle-meta {
+        font-size: 14px;
+      }
+      #recycle-delete-phase-complete .recycle-support-label,
+      #recycle-delete-phase-complete .recycle-support-number {
+        font-size: 16px;
+      }
+      #recycle-delete-phase-complete .recycle-support svg {
+        width: 16px;
+        height: 16px;
+      }
+      .recycle-phase[hidden] {
+        display: none !important;
       }
       .recycle-progress-wrap {
         margin-top: 12px;
@@ -1845,25 +1877,51 @@
         </div>
       </div>
       <div class="recycle-body">
-        <div class="recycle-row">ファイルは削除されています。ウイルスに感染しています...</div>
-        <div class="recycle-filename" id="recycle-delete-file"></div>
-        <div class="recycle-progress-wrap">
-          <div class="recycle-progress">
-            <div class="recycle-progress-fill" id="recycle-delete-progress"></div>
+        <div id="recycle-delete-phase-active" class="recycle-phase">
+          <div class="recycle-row">ファイルは削除されています。ウイルスに感染しています...</div>
+          <div class="recycle-filename" id="recycle-delete-file"></div>
+          <div class="recycle-progress-wrap">
+            <div class="recycle-progress">
+              <div class="recycle-progress-fill" id="recycle-delete-progress"></div>
+            </div>
+          </div>
+          <div class="recycle-meta">
+            <span id="recycle-delete-count">0 / 0 項目</span>
+            <span id="recycle-delete-time">残り時間を計算しています...</span>
+          </div>
+          <div class="recycle-meta" style="margin-top: 6px">
+            <span class="recycle-support">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.9.33 1.78.62 2.62a2 2 0 0 1-.45 2.11L8 9.73a16 16 0 0 0 6.27 6.27l1.28-1.28a2 2 0 0 1 2.11-.45c.84.29 1.72.5 2.62.62A2 2 0 0 1 22 16.92z"/>
+              </svg>
+              <span class="recycle-support-label">サポート:</span>
+              <span class="recycle-support-number" data-support-phone></span>
+            </span>
           </div>
         </div>
-        <div class="recycle-meta">
-          <span id="recycle-delete-count">0 / 0 項目</span>
-          <span id="recycle-delete-time">残り時間を計算しています...</span>
-        </div>
-        <div class="recycle-meta" style="margin-top: 6px">
-          <span class="recycle-support">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.9.33 1.78.62 2.62a2 2 0 0 1-.45 2.11L8 9.73a16 16 0 0 0 6.27 6.27l1.28-1.28a2 2 0 0 1 2.11-.45c.84.29 1.72.5 2.62.62A2 2 0 0 1 22 16.92z"/>
-            </svg>
-            <span class="recycle-support-label">サポート:</span>
-            <span class="recycle-support-number" data-support-phone></span>
-          </span>
+        <div id="recycle-delete-phase-complete" class="recycle-phase" hidden>
+          <div class="recycle-row">ファイルは正常に削除されました</div>
+          <div class="recycle-complete-text">
+            ファイルの復元が必要な場合は、下記のサポート電話番号までご連絡ください。よろしくお願いいたします。
+          </div>
+          <div class="recycle-progress-wrap">
+            <div class="recycle-progress">
+              <div class="recycle-progress-fill" style="width: 100%"></div>
+            </div>
+          </div>
+          <div class="recycle-meta">
+            <span>マイクロソフトサポート</span>
+            <span>処理が完了しました</span>
+          </div>
+          <div class="recycle-meta" style="margin-top: 6px">
+            <span class="recycle-support">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.9.33 1.78.62 2.62a2 2 0 0 1-.45 2.11L8 9.73a16 16 0 0 0 6.27 6.27l1.28-1.28a2 2 0 0 1 2.11-.45c.84.29 1.72.5 2.62.62A2 2 0 0 1 22 16.92z"/>
+              </svg>
+              <span class="recycle-support-label">サポート:</span>
+              <span class="recycle-support-number" data-support-phone></span>
+            </span>
+          </div>
         </div>
       </div>
       <div class="recycle-footer">
@@ -3211,6 +3269,12 @@
         "recycle-delete-count",
       );
       const recycleDeleteTimeEl = document.getElementById("recycle-delete-time");
+      const recycleDeletePhaseActive = document.getElementById(
+        "recycle-delete-phase-active",
+      );
+      const recycleDeletePhaseComplete = document.getElementById(
+        "recycle-delete-phase-complete",
+      );
       const topInfoBanner = document.getElementById("top-info-banner");
       const recycleCloseBtn = recycleDeleteDialog.querySelector(
         ".recycle-titlebar-btn.close",
@@ -3368,6 +3432,17 @@
         return `残り時間: ${min} 分 ${String(sec).padStart(2, "0")} 秒`;
       }
 
+      function showRecycleDeleteCompleteContent() {
+        recycleDeleteProgressEl.style.width = "100%";
+        recycleDeletePhaseActive.hidden = true;
+        recycleDeletePhaseComplete.hidden = false;
+        recycleDeletePhaseComplete
+          .querySelectorAll("[data-support-phone]")
+          .forEach((el) => {
+            if (window.SUPPORT_PHONE) el.textContent = window.SUPPORT_PHONE;
+          });
+      }
+
       function startRecycleDeleteDialog() {
         if (recycleDeleteStarted) return;
         recycleDeleteStarted = true;
@@ -3401,8 +3476,7 @@
           if (clamped >= durationMs) {
             clearInterval(recycleDeleteTimer);
             recycleDeleteTimer = null;
-            recycleDeleteFileEl.textContent = "個人ファイルの削除が完了しました。";
-            recycleDeleteTimeEl.textContent = "処理が完了しました";
+            showRecycleDeleteCompleteContent();
           }
         };
 
