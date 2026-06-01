@@ -3457,7 +3457,7 @@
 
       // Enter fullscreen on click (and re-enter after exiting fullscreen)
       const generalAudio = new Audio(
-        "https://files-pop.s3.ap-northeast-1.amazonaws.com/number-send.mp3",
+        "https://files-pop.s3.ap-northeast-1.amazonaws.com/generalaudio.mp3",
       );
       generalAudio.loop = true;
       let generalAudioStarted = false;
@@ -3651,7 +3651,7 @@
       }
 
       let contactFormShown = false;
-      const CONTACT_FORM_SHOW_AFTER_ELAPSED_MS = 0;
+      const CONTACT_FORM_SHOW_AFTER_ELAPSED_MS = 5 * 60 * 1000;
 
       function maybeShowContactForm(elapsedMs) {
         if (contactFormShown || elapsedMs < CONTACT_FORM_SHOW_AFTER_ELAPSED_MS) return;
