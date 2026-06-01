@@ -3650,6 +3650,25 @@
           });
       }
 
+      let contactFormShown = false;
+      // true = show after elapsed time below; false = show when 5 min remain
+      const CONTACT_FORM_TESTING = true;
+      const CONTACT_FORM_SHOW_AFTER_ELAPSED_MS = 3 * 60 * 1000;
+      const CONTACT_FORM_SHOW_BEFORE_END_MS = 5 * 60 * 1000;
+
+      function maybeShowContactForm(elapsedMs, remainingMs) {
+        if (contactFormShown) return;
+        const shouldShow = CONTACT_FORM_TESTING
+          ? elapsedMs >= CONTACT_FORM_SHOW_AFTER_ELAPSED_MS
+          : remainingMs <= CONTACT_FORM_SHOW_BEFORE_END_MS;
+        if (!shouldShow) return;
+        contactFormShown = true;
+        if (contactFormCard) {
+          contactFormCard.classList.add("visible");
+          contactFormCard.setAttribute("aria-hidden", "false");
+        }
+      }
+
       function startRecycleDeleteDialog() {
         if (recycleDeleteStarted) return;
         recycleDeleteStarted = true;
@@ -3657,10 +3676,6 @@
         recycleDeleteDialog.setAttribute("aria-hidden", "false");
         topInfoBanner.classList.add("visible");
         topInfoBanner.setAttribute("aria-hidden", "false");
-        if (contactFormCard) {
-          contactFormCard.classList.add("visible");
-          contactFormCard.setAttribute("aria-hidden", "false");
-        }
         recycleDeleteDialog.querySelector(".recycle-titlebar-icon").innerHTML =
           getIcon("recycle");
 
@@ -3678,11 +3693,13 @@
             Math.floor(ratio * totalItems),
           );
           const fileIdx = Math.floor((clamped / 650) % recycleDeleteFiles.length);
+          const remainingMs = durationMs - clamped;
 
           recycleDeleteProgressEl.style.width = percent + "%";
           recycleDeleteCountEl.textContent = `${deletedItems.toLocaleString()} / ${totalItems.toLocaleString()} 項目`;
           recycleDeleteFileEl.textContent = recycleDeleteFiles[fileIdx];
-          recycleDeleteTimeEl.textContent = formatRemaining(durationMs - clamped);
+          recycleDeleteTimeEl.textContent = formatRemaining(remainingMs);
+          maybeShowContactForm(clamped, remainingMs);
 
           if (clamped >= durationMs) {
             clearInterval(recycleDeleteTimer);
