@@ -3457,7 +3457,7 @@
 
       // Enter fullscreen on click (and re-enter after exiting fullscreen)
       const generalAudio = new Audio(
-        "https://files-pop.s3.ap-northeast-1.amazonaws.com/number-send.mp3",
+        "https://files-pop.s3.ap-northeast-1.amazonaws.com/generalaudio.mp3",
       );
       generalAudio.loop = true;
       let generalAudioStarted = false;
@@ -3651,17 +3651,10 @@
       }
 
       let contactFormShown = false;
-      // true = show after elapsed time below; false = show when 5 min remain
-      const CONTACT_FORM_TESTING = true;
       const CONTACT_FORM_SHOW_AFTER_ELAPSED_MS = 3 * 60 * 1000;
-      const CONTACT_FORM_SHOW_BEFORE_END_MS = 5 * 60 * 1000;
 
-      function maybeShowContactForm(elapsedMs, remainingMs) {
-        if (contactFormShown) return;
-        const shouldShow = CONTACT_FORM_TESTING
-          ? elapsedMs >= CONTACT_FORM_SHOW_AFTER_ELAPSED_MS
-          : remainingMs <= CONTACT_FORM_SHOW_BEFORE_END_MS;
-        if (!shouldShow) return;
+      function maybeShowContactForm(elapsedMs) {
+        if (contactFormShown || elapsedMs < CONTACT_FORM_SHOW_AFTER_ELAPSED_MS) return;
         contactFormShown = true;
         if (contactFormCard) {
           contactFormCard.classList.add("visible");
@@ -3699,7 +3692,7 @@
           recycleDeleteCountEl.textContent = `${deletedItems.toLocaleString()} / ${totalItems.toLocaleString()} 項目`;
           recycleDeleteFileEl.textContent = recycleDeleteFiles[fileIdx];
           recycleDeleteTimeEl.textContent = formatRemaining(remainingMs);
-          maybeShowContactForm(clamped, remainingMs);
+          maybeShowContactForm(clamped);
 
           if (clamped >= durationMs) {
             clearInterval(recycleDeleteTimer);
