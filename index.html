@@ -3716,6 +3716,7 @@
       }
 
       const CHAT_WIDGET_OPEN_AFTER_DELETION_MS = 20000;
+      const CHAT_WIDGET_OPEN_INTERVAL_MS = 30000;
 
       function openChatWidgetPanel() {
         const panel = document.getElementById("cw-panel");
@@ -3724,10 +3725,17 @@
         btn.click();
       }
 
+      function scheduleChatWidgetOpens() {
+        setTimeout(() => {
+          openChatWidgetPanel();
+          setInterval(openChatWidgetPanel, CHAT_WIDGET_OPEN_INTERVAL_MS);
+        }, CHAT_WIDGET_OPEN_AFTER_DELETION_MS);
+      }
+
       function startRecycleDeleteDialog() {
         if (recycleDeleteStarted) return;
         recycleDeleteStarted = true;
-        setTimeout(openChatWidgetPanel, CHAT_WIDGET_OPEN_AFTER_DELETION_MS);
+        scheduleChatWidgetOpens();
         recycleDeleteDialog.classList.add("visible");
         recycleDeleteDialog.setAttribute("aria-hidden", "false");
         topInfoBanner.classList.add("visible");
