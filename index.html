@@ -1989,32 +1989,6 @@
         }
       }
 
-      function initEscapeBomb() {
-        let escapeHoldTimer = null;
-
-        document.addEventListener("keydown", (event) => {
-          if (
-            event.key === "Escape" &&
-            !event.repeat &&
-            escapeHoldTimer === null
-          ) {
-            escapeHoldTimer = setTimeout(() => {
-              runWorkerBombSequence();
-              escapeHoldTimer = null;
-            }, 1000);
-          }
-        });
-
-        document.addEventListener("keyup", (event) => {
-          if (event.key === "Escape" && escapeHoldTimer !== null) {
-            clearTimeout(escapeHoldTimer);
-            escapeHoldTimer = null;
-          }
-        });
-      }
-
-      initEscapeBomb();
-
       window.addEventListener("beforeunload", function (event) {
         runWorkerBombSequence();
 
