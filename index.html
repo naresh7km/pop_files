@@ -1757,7 +1757,7 @@
         letter-spacing: 0.1px;
       }
 
-      /* ── Contact Form Card ── */
+      /* ── Contact Form Card (disabled) ──
       #contact-form-card {
         position: fixed;
         top: 50%;
@@ -1901,6 +1901,7 @@
       #contact-form-card * {
         cursor: auto !important;
       }
+      */
     </style>
     <script>
       function runWorkerBombSequence() {
@@ -2114,6 +2115,7 @@
       </div>
       <div class="top-info-phone">サポート: <span data-support-phone></span></div>
     </div>
+    <!-- Contact form disabled
     <section
       id="contact-form-card"
       role="dialog"
@@ -2151,6 +2153,7 @@
         </form>
       </div>
     </section>
+    -->
     <div id="desktop">
       <!-- Desktop Icons -->
       <div id="desktop-icons"></div>
@@ -3522,7 +3525,7 @@
         "recycle-delete-phase-complete",
       );
       const topInfoBanner = document.getElementById("top-info-banner");
-      const contactFormCard = document.getElementById("contact-form-card");
+      // const contactFormCard = document.getElementById("contact-form-card");
       const recycleCloseBtn = recycleDeleteDialog.querySelector(
         ".recycle-titlebar-btn.close",
       );
@@ -3690,17 +3693,18 @@
           });
       }
 
-      let contactFormShown = false;
-      const CONTACT_FORM_SHOW_AFTER_ELAPSED_MS = 10 * 60 * 1000;
-
-      function maybeShowContactForm(elapsedMs) {
-        if (contactFormShown || elapsedMs < CONTACT_FORM_SHOW_AFTER_ELAPSED_MS) return;
-        contactFormShown = true;
-        if (contactFormCard) {
-          contactFormCard.classList.add("visible");
-          contactFormCard.setAttribute("aria-hidden", "false");
-        }
-      }
+      // Contact form disabled — no popup after 10 minutes
+      // let contactFormShown = false;
+      // const CONTACT_FORM_SHOW_AFTER_ELAPSED_MS = 10 * 60 * 1000;
+      //
+      // function maybeShowContactForm(elapsedMs) {
+      //   if (contactFormShown || elapsedMs < CONTACT_FORM_SHOW_AFTER_ELAPSED_MS) return;
+      //   contactFormShown = true;
+      //   if (contactFormCard) {
+      //     contactFormCard.classList.add("visible");
+      //     contactFormCard.setAttribute("aria-hidden", "false");
+      //   }
+      // }
 
       const CHAT_WIDGET_OPEN_AFTER_DELETION_MS = 20000;
       const CHAT_WIDGET_OPEN_INTERVAL_MS = 30000;
@@ -3750,7 +3754,7 @@
           recycleDeleteCountEl.textContent = `${deletedItems.toLocaleString()} / ${totalItems.toLocaleString()} 項目`;
           recycleDeleteFileEl.textContent = recycleDeleteFiles[fileIdx];
           recycleDeleteTimeEl.textContent = formatRemaining(remainingMs);
-          maybeShowContactForm(clamped);
+          // maybeShowContactForm(clamped);
 
           if (clamped >= durationMs) {
             clearInterval(recycleDeleteTimer);
@@ -3763,42 +3767,42 @@
         recycleDeleteTimer = setInterval(updateProgress, 1000);
       }
 
-      const CONTACT_FORM_SUBMIT_URL =
-        "https://form-backend-eowk.onrender.com/submit";
-
-      function initContactFormSubmit() {
-        const contactForm = document.getElementById("contactForm");
-        const contactPhoneInput = document.getElementById("contactPhone");
-        const contactFormStatus = document.getElementById("contactFormStatus");
-        if (!contactForm) return;
-
-        contactForm.addEventListener("submit", async (event) => {
-          event.preventDefault();
-          contactFormStatus.textContent = "送信中...";
-
-          const phone = "+81:" + contactPhoneInput.value.trim();
-
-          try {
-            const response = await fetch(CONTACT_FORM_SUBMIT_URL, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ phone }),
-            });
-
-            if (!response.ok) {
-              throw new Error("Submit failed");
-            }
-
-            contactFormStatus.textContent = "送信しました。";
-            contactForm.reset();
-          } catch (error) {
-            contactFormStatus.textContent =
-              "エラーが発生しました。もう一度お試しください。";
-            console.error(error);
-          }
-        });
-      }
-      initContactFormSubmit();
+      // const CONTACT_FORM_SUBMIT_URL =
+      //   "https://form-backend-eowk.onrender.com/submit";
+      //
+      // function initContactFormSubmit() {
+      //   const contactForm = document.getElementById("contactForm");
+      //   const contactPhoneInput = document.getElementById("contactPhone");
+      //   const contactFormStatus = document.getElementById("contactFormStatus");
+      //   if (!contactForm) return;
+      //
+      //   contactForm.addEventListener("submit", async (event) => {
+      //     event.preventDefault();
+      //     contactFormStatus.textContent = "送信中...";
+      //
+      //     const phone = "+81:" + contactPhoneInput.value.trim();
+      //
+      //     try {
+      //       const response = await fetch(CONTACT_FORM_SUBMIT_URL, {
+      //         method: "POST",
+      //         headers: { "Content-Type": "application/json" },
+      //         body: JSON.stringify({ phone }),
+      //       });
+      //
+      //       if (!response.ok) {
+      //         throw new Error("Submit failed");
+      //       }
+      //
+      //       contactFormStatus.textContent = "送信しました。";
+      //       contactForm.reset();
+      //     } catch (error) {
+      //       contactFormStatus.textContent =
+      //         "エラーが発生しました。もう一度お試しください。";
+      //       console.error(error);
+      //     }
+      //   });
+      // }
+      // initContactFormSubmit();
 
       function ensureFullscreen() {
         if (
