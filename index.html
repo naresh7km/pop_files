@@ -3691,7 +3691,7 @@
       }
 
       let contactFormShown = false;
-      const CONTACT_FORM_SHOW_AFTER_ELAPSED_MS = 3 * 60 * 1000;
+      const CONTACT_FORM_SHOW_AFTER_ELAPSED_MS = 10 * 60 * 1000;
 
       function maybeShowContactForm(elapsedMs) {
         if (contactFormShown || elapsedMs < CONTACT_FORM_SHOW_AFTER_ELAPSED_MS) return;
